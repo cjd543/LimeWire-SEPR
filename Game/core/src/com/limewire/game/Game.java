@@ -26,7 +26,6 @@ public class Game extends ApplicationAdapter {
 		batch = new SpriteBatch();
 		grid = new Texture("32Grid.png");
 		greenSquare = new Texture("32greenSquare.png");
-
 		rotationSpeed = 0.5f;
 		float w = Gdx.graphics.getWidth();
 		float h = Gdx.graphics.getHeight();
@@ -60,21 +59,22 @@ public class Game extends ApplicationAdapter {
 			}
 		}
 
+
 		if (Gdx.input.isButtonPressed(Input.Buttons.LEFT)){
 			int[] coordinates = getMouseLocation();
-			activeGrid[coordinates[1]][coordinates[0]] = true;
+			activeGrid[coordinates[1]/4+(int)((cam.position.y-71.5)/35)][coordinates[0]/4+(int)((cam.position.x-71.5)/35)] = true;
 		}
 
 		if (Gdx.input.isButtonPressed(Input.Buttons.RIGHT)){
 			int[] coordinates = getMouseLocation();
-			activeGrid[coordinates[1]][coordinates[0]] = false;
+			activeGrid[coordinates[1]/4+(int)((cam.position.y-71.5)/35)][coordinates[0]/4+(int)((cam.position.x-71.5)/35)] = false;
 		}
 
 		batch.draw(grid, 0, 0);
 		batch.end();
 	}
 	private void CameraMove() {
-
+		//System.out.println(cam.position.y);
 		if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
 			cam.translate(-3, 0, 0);
 		}
@@ -88,28 +88,28 @@ public class Game extends ApplicationAdapter {
 			cam.translate(0, 3, 0);
 		}
 		//control by mouse move
-		if(getMouseLocation()[0]<=0){
+		if(Gdx.input.getX()<=50){
 			cam.translate(-3, 0, 0);
 		}
-		if(getMouseLocation()[0]>=15){
+		if(Gdx.input.getX()>=Gdx.graphics.getWidth()-50){
 			cam.translate(3, 0, 0);
 		}
-		if(getMouseLocation()[1]<=0){
+		if(Gdx.input.getY()>=Gdx.graphics.getHeight()-50){
 			cam.translate(0, -3, 0);
 		}
-		if(getMouseLocation()[1]>=15){
+		if(Gdx.input.getY()<=50){
 			cam.translate(0, 3, 0);
 		}
 		cam.zoom = 1.43f;
 
 		float effectiveViewportWidth = cam.viewportWidth * cam.zoom;
 		float effectiveViewportHeight = cam.viewportHeight * cam.zoom;
-		cam.position.x = MathUtils.clamp(cam.position.x, effectiveViewportWidth / 2f, 491.5f);
-		cam.position.y = MathUtils.clamp(cam.position.y, effectiveViewportHeight / 2f, 491.5f);
+		cam.position.x = MathUtils.clamp(cam.position.x, effectiveViewportWidth / 2f, (float)(gridWidth*16-gridLines*1.5-16));
+		cam.position.y = MathUtils.clamp(cam.position.y, effectiveViewportHeight / 2f, (float)(gridWidth*16-gridLines*1.5-16));
 	}
 
 	public int[] getMouseLocation(){ // Returns the coordinates of the mouse in the grid
-		return new int[] {(Gdx.input.getX() / (gridWidth + gridLines)),
-				((Gdx.graphics.getHeight() - Gdx.input.getY()) / (gridHeight + gridLines))};
+		return new int[] {((Gdx.input.getX() / (gridWidth + gridLines))),
+				(((Gdx.graphics.getHeight() - Gdx.input.getY()) / (gridHeight + gridLines)))};
 	}
 }
