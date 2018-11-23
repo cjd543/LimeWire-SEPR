@@ -5,6 +5,8 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 import java.util.Arrays;
@@ -16,12 +18,25 @@ public class Game extends ApplicationAdapter {
 	int gridHeight = 32;
 	int gridLines = 3;
 	boolean[][] activeGrid;
+	private OrthographicCamera cam;
+	private float rotationSpeed;
 
 	@Override
 	public void create () {
 		batch = new SpriteBatch();
 		grid = new Texture("32Grid.png");
 		greenSquare = new Texture("32greenSquare.png");
+
+		rotationSpeed = 0.5f;
+		float w = Gdx.graphics.getWidth();
+		float h = Gdx.graphics.getHeight();
+
+		// Constructs a new OrthographicCamera, using the given viewport width and height
+		// Height is multiplied by aspect ratio.
+		cam = new OrthographicCamera(100, 100 * (h / w));
+
+		cam.position.set(cam.viewportWidth / 2f, cam.viewportHeight / 2f, 0);
+		cam.update();
 
 		activeGrid = new boolean[32][32];
 	}
@@ -30,6 +45,9 @@ public class Game extends ApplicationAdapter {
 	public void render () {
 		Gdx.gl.glClearColor(1, 1f, 1, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+		CameraMove();
+		cam.update();
+		batch.setProjectionMatrix(cam.combined);
 
 
 		batch.begin();
@@ -54,6 +72,40 @@ public class Game extends ApplicationAdapter {
 
 		batch.draw(grid, 0, 0);
 		batch.end();
+	}
+	private void CameraMove() {
+
+		if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
+			cam.translate(-3, 0, 0);
+		}
+		if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
+			cam.translate(3, 0, 0);
+		}
+		if (Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
+			cam.translate(0, -3, 0);
+		}
+		if (Gdx.input.isKeyPressed(Input.Keys.UP)) {
+			cam.translate(0, 3, 0);
+		}
+		//control by mouse move
+		if(getMouseLocation()[0]<=0){
+			cam.translate(-3, 0, 0);
+		}
+		if(getMouseLocation()[0]>=15){
+			cam.translate(3, 0, 0);
+		}
+		if(getMouseLocation()[1]<=0){
+			cam.translate(0, -3, 0);
+		}
+		if(getMouseLocation()[1]>=15){
+			cam.translate(0, 3, 0);
+		}
+		cam.zoom = 1.43f;
+
+		float effectiveViewportWidth = cam.viewportWidth * cam.zoom;
+		float effectiveViewportHeight = cam.viewportHeight * cam.zoom;
+		cam.position.x = MathUtils.clamp(cam.position.x, effectiveViewportWidth / 2f, 491.5f);
+		cam.position.y = MathUtils.clamp(cam.position.y, effectiveViewportHeight / 2f, 491.5f);
 	}
 
 	public int[] getMouseLocation(){ // Returns the coordinates of the mouse in the grid
