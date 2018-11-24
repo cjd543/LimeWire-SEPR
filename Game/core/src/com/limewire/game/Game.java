@@ -62,12 +62,12 @@ public class Game extends ApplicationAdapter {
 
 		if (Gdx.input.isButtonPressed(Input.Buttons.LEFT)){
 			int[] coordinates = getMouseLocation();
-			activeGrid[coordinates[1]/4+(int)((cam.position.y-71.5)/35)][coordinates[0]/4+(int)((cam.position.x-71.5)/35)] = true;
+			activeGrid[coordinates[1]/4+(int)((cam.position.y-(gridWidth*2+gridLines*2.5))/(gridLines+gridWidth))][coordinates[0]/4+(int)((cam.position.x-(gridWidth*2+gridLines*2.5))/(gridLines+gridWidth))] = true;
 		}
 
 		if (Gdx.input.isButtonPressed(Input.Buttons.RIGHT)){
 			int[] coordinates = getMouseLocation();
-			activeGrid[coordinates[1]/4+(int)((cam.position.y-71.5)/35)][coordinates[0]/4+(int)((cam.position.x-71.5)/35)] = false;
+			activeGrid[coordinates[1]/4+(int)((cam.position.y-(gridWidth*2+gridLines*2.5))/(gridLines+gridWidth))][coordinates[0]/4+(int)((cam.position.x-(gridWidth*2+gridLines*2.5))/(gridLines+gridWidth))] = false;
 		}
 
 		batch.draw(grid, 0, 0);
