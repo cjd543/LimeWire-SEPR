@@ -17,16 +17,18 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 
 public class Game extends ApplicationAdapter {
 	SpriteBatch batch;
-	Texture grid, greenSquare;
+	Texture grid, greenSquare,minimap,toolbar;
 	int gridWidth = 32;
 	int gridHeight = 32;
 	int gridLines = 3;
 	boolean[][] activeGrid;
 	private OrthographicCamera cam;
 
-	private Stage stage;
-	private Button buttonmap;
-	private Button buttontool;
+	Stage stage;
+	Button buttonmap;
+	int buttonmap_counter = 0;
+	Button buttontool;
+	int buttontool_counter = 0;
 
 	@Override
 	public void create () {
@@ -42,29 +44,35 @@ public class Game extends ApplicationAdapter {
 		activeGrid = new boolean[32][32];
 
 		/* button */
+		minimap = new Texture("minimap.png");
+		toolbar = new Texture("GUI-1.png");
 		Gdx.app.setLogLevel(Application.LOG_DEBUG);
 		stage = new Stage();
 		Gdx.input.setInputProcessor(stage);
 		buttonmap = new ButtonSetup().setup("buttonmap");
 		buttonmap.setSize(50,50);
-		buttonmap.setPosition(5, 60);
+		buttonmap.setPosition(10, 60);
 		buttonmap.addListener(new ClickListener() {
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
 				System.out.println("click map");
+				buttonmap_counter +=1;
 			}
 		});
 		buttontool = new ButtonSetup().setup("buttontool");
 		buttontool.setSize(50,50);
-		buttontool.setPosition(5,5);
+		buttontool.setPosition(10,5);
 		buttontool.addListener(new ClickListener() {
 			@Override
 			public void clicked(InputEvent event, float x, float y){
 				System.out.println("click tool");
+				buttontool_counter += 1;
 			}
 		});
 		stage.addActor(buttonmap);
 		stage.addActor(buttontool);
+
+
 		/* button end */
 
 	}
@@ -97,12 +105,21 @@ public class Game extends ApplicationAdapter {
 			activeGrid[coordinates[1]/4+(int)Math.round(((cam.position.y-(gridWidth*2+gridLines*2.5))/(gridLines+gridWidth)))][coordinates[0]/4+(int)Math.round(((cam.position.x-(gridWidth*2+gridLines*2.5))/(gridLines+gridWidth)))] = false;
 		}
 
+
 		batch.draw(grid, 0, 0);
+		if(buttonmap_counter%2 == 1){
+			batch.draw(minimap,20+cam.position.x, 20+cam.position.y,50,50);
+		}
+		if(buttontool_counter%2 ==1){
+			batch.draw(toolbar,(float) (15+cam.position.x-(gridWidth*2+gridLines*2.5)),(float)(cam.position.y-(gridWidth*2+gridLines*2.5)),120,33);
+		}
+
 		batch.end();
 
 		/*button*/
 		stage.act();
 		stage.draw();
+
 		/*button end*/
 	}
 	private void CameraMove() {
@@ -120,17 +137,20 @@ public class Game extends ApplicationAdapter {
 			cam.translate(0, 3, 0);
 		}
 		//control by mouse move
-		if(Gdx.input.getX()<=50){
-			cam.translate(-3, 0, 0);
-		}
-		if(Gdx.input.getX()>=Gdx.graphics.getWidth()-50){
-			cam.translate(3, 0, 0);
-		}
-		if(Gdx.input.getY()>=Gdx.graphics.getHeight()-50){
-			cam.translate(0, -3, 0);
-		}
-		if(Gdx.input.getY()<=50){
-			cam.translate(0, 3, 0);
+		if(Gdx.input.isButtonPressed(Input.Buttons.RIGHT)||Gdx.input.isButtonPressed(Input.Buttons.LEFT)){
+
+			if(Gdx.input.getX()<=50){
+				cam.translate(-3, 0, 0);
+			}
+			if(Gdx.input.getX()>=Gdx.graphics.getWidth()-20){
+				cam.translate(3, 0, 0);
+			}
+			if(Gdx.input.getY()>=Gdx.graphics.getHeight()-20){
+				cam.translate(0, -3, 0);
+			}
+			if(Gdx.input.getY()<=50){
+				cam.translate(0, 3, 0);
+			}
 		}
 		cam.zoom = 1.43f;
 
